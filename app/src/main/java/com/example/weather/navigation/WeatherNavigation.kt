@@ -18,7 +18,7 @@ fun WeatherNavigation() {
        startDestination = WeatherScreens.SplashScreen.name){
        //creating navgraphs
        composable(WeatherScreens.SplashScreen.name){
-           WeatherSplashScreen(navController=navController)
+           WeatherSplashScreen(navController =navController)
        }
    }
 }
