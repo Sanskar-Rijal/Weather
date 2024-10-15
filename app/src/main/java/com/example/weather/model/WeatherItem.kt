@@ -1,19 +1,16 @@
 package com.example.weather.model
 
+import com.example.weather.MainActivity
+
 data class WeatherItem(
     val dt:Int,
-    val sunrise:Int,
-    val sunset:Int,
-    val temp:Temp,
-    val feels_like:Feelslike,
-    val pressure:Int,
-    val humidity:Int,
-    val weather: List<WeatherObjects>,
-    val speed:Double,
-    val deg:Int,
-    val gust:Double,
-    val clouds:Int,
+    val main:Main,
+    val weather:WeatherX,
+    val clouds:Clouds,
+    val wind:Wind,
+    val visibility:Int,
     val pop:Double,
-    val rain:Double
+    val rain:Rain,
+    val sys:System,
+    val dt_txt:String
 )
-

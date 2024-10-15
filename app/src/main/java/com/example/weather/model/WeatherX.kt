@@ -1,6 +1,6 @@
 package com.example.weather.model
 
-data class WeatherObjects(
+data class WeatherX(
     val id:Int,
     val main:String,
     val description:String,
