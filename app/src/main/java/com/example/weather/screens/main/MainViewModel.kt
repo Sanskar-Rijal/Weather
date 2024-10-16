@@ -22,15 +22,17 @@ class MainViewModel @Inject constructor(private val repository:WeatherRepository
         loadWeather()
     }
     private fun loadWeather(){
-        getWeather(44.34,10.99)
+        getWeatherByCity("London")
     }
-    private fun getWeather(latitude:Double, longitude:Double){
+    private fun getWeatherByCity(cityName:String){
         viewModelScope.launch {
-            if(latitude.toString().isEmpty() || longitude.toString().isEmpty()) {
+
+            if(cityName.isEmpty()) {
                 return@launch
             }
+
             data.value.loading=true
-            data.value=repository.getWeather(latitude,longitude)
+            data.value = repository.getWeatherByCity(cityName)
             if(data.value.data.toString().isNotEmpty()) {
                 data.value.loading = false
             }
