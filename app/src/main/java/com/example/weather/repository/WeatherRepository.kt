@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 //similar to taking data from dao but in this case Weather_Api
 class WeatherRepository @Inject constructor(
-    private val weather_api:WeatherApi,
-    private val gecoding_api:GecodingApi ) {
+    private val gecoding_api:GecodingApi,
+    private val weather_api:WeatherApi,) {
 
     //getting weather by city name
     suspend fun getWeatherByCity(city:String):DataorException<Weather,Boolean,Exception>{

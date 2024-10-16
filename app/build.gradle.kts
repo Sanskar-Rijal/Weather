@@ -79,7 +79,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
     // Hilt Navigation Compose
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //coil (used in movies app to show images from https)
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")

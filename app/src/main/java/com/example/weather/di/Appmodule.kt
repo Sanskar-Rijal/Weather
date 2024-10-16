@@ -1,5 +1,6 @@
 package com.example.weather.di
 
+import com.example.weather.network.GecodingApi
 import com.example.weather.network.WeatherApi
 import com.example.weather.utils.Constants
 import dagger.Module
@@ -26,5 +27,14 @@ class Appmodule {
             .create(WeatherApi::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideGecodingApi():GecodingApi{
+        return Retrofit.Builder()
+            .baseUrl(Constants.Base_Url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GecodingApi::class.java)
+    }
 
 }
