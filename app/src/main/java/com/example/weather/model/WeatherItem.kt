@@ -5,7 +5,7 @@ import com.example.weather.MainActivity
 data class WeatherItem(
     val dt:Int,
     val main:Main,
-    val weather:WeatherX,
+    val weather:List<WeatherX>,
     val clouds:Clouds,
     val wind:Wind,
     val visibility:Int,

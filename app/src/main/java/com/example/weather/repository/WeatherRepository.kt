@@ -1,6 +1,7 @@
 package com.example.weather.repository
 
 import android.provider.ContactsContract.Data
+import android.util.Log
 import com.example.weather.data.DataorException
 import com.example.weather.model.Weather
 import com.example.weather.modelgeo.GeoLocation
@@ -11,7 +12,7 @@ import javax.inject.Inject
 //similar to taking data from dao but in this case Weather_Api
 class WeatherRepository @Inject constructor(
     private val gecoding_api:GecodingApi,
-    private val weather_api:WeatherApi,) {
+    private val weather_api:WeatherApi) {
 
     //getting weather by city name
     suspend fun getWeatherByCity(city:String):DataorException<Weather,Boolean,Exception>{
@@ -34,6 +35,7 @@ class WeatherRepository @Inject constructor(
         val response = try{
             weather_api.getWeather(latitude,longitude)
         }catch (e:Exception){
+            Log.d("Rex", "getWeather: $e")
             return DataorException(e=e)
         }
         return DataorException(data=response)
