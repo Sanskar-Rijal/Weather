@@ -83,6 +83,7 @@ dependencies {
 
     //coil (used in movies app to show images from https)
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
