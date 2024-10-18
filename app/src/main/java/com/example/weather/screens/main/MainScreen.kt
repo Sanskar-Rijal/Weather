@@ -1,6 +1,9 @@
 package com.example.weather.screens.main
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,7 +41,9 @@ fun MainScaffold(weather: Weather,navController: NavController){
 
     Scaffold(
         topBar = {
-            WeatherAppbar()
+            WeatherAppbar(title = weather.city.name + " , ${weather.city.country}"){
+                //onbuttonclicked is last parameter so we can use trailing lamda
+            }
         }
     ) {
         Text(modifier = Modifier.padding(it), text = " ")
