@@ -41,11 +41,11 @@ fun WeatherAppbar(title:String="London",
 
 
      CenterAlignedTopAppBar( colors = TopAppBarDefaults.topAppBarColors(
-         containerColor = MaterialTheme.colorScheme.inversePrimary,
+         containerColor = MaterialTheme.colorScheme.primary,
          titleContentColor = Color.White),
          title = {
          Text(text =title,
-             color = MaterialTheme.colorScheme.primary,
+             color = MaterialTheme.colorScheme.inversePrimary,
              style = TextStyle(fontWeight = FontWeight.Bold,
                  fontSize = 23.sp)
          )},
@@ -54,10 +54,12 @@ fun WeatherAppbar(title:String="London",
              if(isMainScreen){
                  IconButton(onClick = { }) {
                      Icon(imageVector = Icons.Default.Search ,
-                         contentDescription = "Search Icon") }
+                         contentDescription = "Search Icon",
+                         tint = MaterialTheme.colorScheme.inversePrimary) }
                  IconButton(onClick = {}) {
                      Icon(imageVector = Icons.Rounded.MoreVert,
-                         contentDescription = "more item")
+                         contentDescription = "more item",
+                         tint = MaterialTheme.colorScheme.inversePrimary)
                  }
 
              }

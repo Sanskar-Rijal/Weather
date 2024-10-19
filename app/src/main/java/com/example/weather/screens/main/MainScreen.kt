@@ -39,6 +39,8 @@ import com.example.weather.R
 import com.example.weather.data.DataorException
 import com.example.weather.model.Main
 import com.example.weather.model.Weather
+import com.example.weather.utils.formatDate
+import com.example.weather.utils.formatDecimal
 import com.example.weather.widgets.WeatherAppbar
 
 @Composable
@@ -46,7 +48,7 @@ fun MainScreen(navController: NavController,viewModel: MainViewModel= hiltViewMo
 
     val weatherData = produceState<DataorException<Weather,Boolean,Exception>>(
         initialValue =DataorException(loading = true)){
-        value = viewModel.getWeatherData("London")
+        value = viewModel.getWeatherData("Mustang")
     }.value
 
     if(weatherData.loading==true){
@@ -85,7 +87,7 @@ fun MainContent(modifier: Modifier,data:Weather){
          .fillMaxWidth(),
          verticalArrangement = Arrangement.Center,
          horizontalAlignment = Alignment.CenterHorizontally) {
-         Text(text = "Novnnknknkn 29",
+         Text(text = formatDate(data.list[0].dt),
              color = Color.White,
              style = MaterialTheme.typography.titleMedium,
              fontWeight = FontWeight.SemiBold,
@@ -95,17 +97,17 @@ fun MainContent(modifier: Modifier,data:Weather){
              .padding(4.dp)
              .size(200.dp),
              shape = CircleShape,
-             color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+             color = MaterialTheme.colorScheme.primary) {
              Column(verticalArrangement = Arrangement.Center,
                  horizontalAlignment = Alignment.CenterHorizontally) {
 
                  //adding image
                  WeatherStateImage(imageUrl = imageUrl)
 
-                 Text(text = "54",
+                 Text(text = formatDecimal(data.list[0].main.temp-273.15) + "°",
                      style = MaterialTheme.typography.displayLarge,
                      fontWeight = FontWeight.ExtraBold)
-                 Text(text = "Snow",
+                 Text(text = data.list[0].weather[0].description,
                      fontStyle = FontStyle.Italic)
              }
          }
@@ -119,11 +121,11 @@ fun WeatherStateImage(imageUrl:String){
         model = ImageRequest.Builder(LocalContext.current)
             .data(imageUrl)
             .crossfade(true)
-            .listener(
-                onError = { request: ImageRequest, error: ErrorResult ->
-                    Log.e("AsyncImage", "Image loading error: ${error.throwable}")
-                }
-            )
+//            .listener(
+//                onError = { request: ImageRequest, error: ErrorResult ->
+//                    Log.e("AsyncImage", "Image loading error: ${error.throwable}")
+//                }
+//            )
             .build(),
         contentDescription = "image for Weather",
         contentScale = ContentScale.FillBounds,
