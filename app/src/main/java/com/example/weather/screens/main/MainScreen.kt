@@ -3,6 +3,7 @@ package com.example.weather.screens.main
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +42,7 @@ import com.example.weather.R
 import com.example.weather.data.DataorException
 import com.example.weather.model.Main
 import com.example.weather.model.Weather
+import com.example.weather.model.WeatherItem
 import com.example.weather.utils.formatDate
 import com.example.weather.utils.formatDecimal
 import com.example.weather.widgets.WeatherAppbar
@@ -48,7 +52,7 @@ fun MainScreen(navController: NavController,viewModel: MainViewModel= hiltViewMo
 
     val weatherData = produceState<DataorException<Weather,Boolean,Exception>>(
         initialValue =DataorException(loading = true)){
-        value = viewModel.getWeatherData("Mustang")
+        value = viewModel.getWeatherData("Kathmandu")
     }.value
 
     if(weatherData.loading==true){
@@ -111,10 +115,13 @@ fun MainContent(modifier: Modifier,data:Weather){
                      fontStyle = FontStyle.Italic)
              }
          }
+         HumiditywindAndPressure(weather = data.list[0])
      }
 }
 
 
+
+//composable for showing current weather with image
 @Composable
 fun WeatherStateImage(imageUrl:String){
     AsyncImage(
@@ -133,4 +140,41 @@ fun WeatherStateImage(imageUrl:String){
         error = painterResource(R.drawable.error),
         modifier = Modifier.size(80.dp).clip(CircleShape)
     )
+}
+
+
+//humidity wind and pressure
+
+@Composable
+fun HumiditywindAndPressure(weather:WeatherItem){
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween){
+        Row(modifier = Modifier.padding(4.dp)) {
+            Icon(painter = painterResource(R.drawable.humidity),
+                contentDescription = "Humidity icon",
+                modifier = Modifier.size(20.dp))
+            Text(text = " ${weather.main.humidity}%",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Row(modifier = Modifier.padding(4.dp)) {
+            Icon(painter = painterResource(R.drawable.pressure),
+                contentDescription = "Pressure icon",
+                modifier = Modifier.size(20.dp))
+            Text(text = " ${weather.main.pressure} hPa",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Row(modifier = Modifier.padding(4.dp)) {
+            Icon(painter = painterResource(R.drawable.wind),
+                contentDescription = "Humidity icon",
+                modifier = Modifier.size(20.dp))
+            Text(text = " ${weather.wind.speed} m/s",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
 }
