@@ -1,25 +1,28 @@
 package com.example.weather.screens.main
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,24 +30,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.weather.R
 import com.example.weather.data.DataorException
-import com.example.weather.model.Main
+import com.example.weather.model.City
 import com.example.weather.model.Weather
 import com.example.weather.model.WeatherItem
+import com.example.weather.utils.day
 import com.example.weather.utils.formatDate
 import com.example.weather.utils.formatDecimal
+import com.example.weather.utils.formatTimeandDate
 import com.example.weather.widgets.WeatherAppbar
 
 @Composable
@@ -75,7 +78,6 @@ fun MainScaffold(weather: Weather,navController: NavController){
         }
     ) {
         MainContent(Modifier.padding(it),weather)
-
     }
 
 }
@@ -111,36 +113,25 @@ fun MainContent(modifier: Modifier,data:Weather){
                  Text(text = formatDecimal(data.list[0].main.temp-273.15) + "°",
                      style = MaterialTheme.typography.displayLarge,
                      fontWeight = FontWeight.ExtraBold)
+
                  Text(text = data.list[0].weather[0].description,
                      fontStyle = FontStyle.Italic)
              }
          }
          HumiditywindAndPressure(weather = data.list[0])
+         HorizontalDivider(thickness = 2.dp,
+             color = MaterialTheme.colorScheme.primary)
+         SunRiseandSunset(weather = data.city)
+
+         Text(text = "This Week",
+             fontWeight = FontWeight.ExtraBold,
+             fontSize = 17.sp)
+
+         //scrollable weather for this week
+         WeatherRow(weather = data.list)
      }
 }
 
-
-
-//composable for showing current weather with image
-@Composable
-fun WeatherStateImage(imageUrl:String){
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(imageUrl)
-            .crossfade(true)
-//            .listener(
-//                onError = { request: ImageRequest, error: ErrorResult ->
-//                    Log.e("AsyncImage", "Image loading error: ${error.throwable}")
-//                }
-//            )
-            .build(),
-        contentDescription = "image for Weather",
-        contentScale = ContentScale.FillBounds,
-        placeholder = painterResource(R.drawable.dummy),
-        error = painterResource(R.drawable.error),
-        modifier = Modifier.size(80.dp).clip(CircleShape)
-    )
-}
 
 
 //humidity wind and pressure
@@ -177,4 +168,119 @@ fun HumiditywindAndPressure(weather:WeatherItem){
             )
         }
     }
+}
+
+//composable for sunrise and sunset
+@Composable
+fun SunRiseandSunset(weather: City)
+{
+    Row(modifier = Modifier.padding(10.dp)
+        .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween){
+
+        Row(Modifier.padding(4.dp)) {
+
+            Icon(painter = painterResource(R.drawable.sunrise),
+                contentDescription = "sunRise",
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(2.dp))
+            Text(text= formatTimeandDate( weather.sunrise),
+                modifier =Modifier.padding(2.dp),
+                style = MaterialTheme.typography.bodyMedium)
+
+        }
+
+
+        Row(modifier = Modifier.padding(4.dp)){
+
+            Icon(painter = painterResource(R.drawable.sunset),
+                contentDescription = "Sunset",
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(20.dp))
+            Text(text= formatTimeandDate(weather.sunset),
+                modifier = Modifier.padding(2.dp),
+                style = MaterialTheme.typography.bodyMedium)
+
+        }
+    }
+}
+
+//for showing list of weather for this week
+@Composable
+fun WeatherRow(weather: List<WeatherItem>){
+    val options = remember(weather){
+        weather.toMutableList() //when the weather list changes, this will recompose
+    }
+    Surface(modifier = Modifier
+        .padding(10.dp)
+        .fillMaxHeight()
+        .fillMaxWidth(),
+        color = Color.LightGray,
+        shape = RoundedCornerShape(17.dp)
+    ) {
+        LazyColumn {
+            items(items = weather){ item: WeatherItem ->
+                    weatherDetailedRow(item)
+                }
+            }
+        }
+    }
+
+
+//items of row inside Weatherrow
+@Composable
+fun weatherDetailedRow(data: WeatherItem){
+    Card(modifier = Modifier
+        .padding(5.dp)
+        .clip(RoundedCornerShape(topEnd = 33.dp, bottomStart = 33.dp))
+        .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 15.dp)) {
+        Row(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            //day  icon description temperature
+
+            Text(text = day(data.dt),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold)
+
+            WeatherStateImage("https://openweathermap.org/img/wn/${data.weather[0].icon}.png",
+                40)
+
+            Text(text = data.weather[0].description,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold)
+
+            Text(text = formatDecimal(data.main.temp -273.15) +"°",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+//composable for showing current weather with image
+@Composable
+fun WeatherStateImage(imageUrl:String,size:Int=80){
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(imageUrl)
+            .crossfade(true)
+//            .listener(
+//                onError = { request: ImageRequest, error: ErrorResult ->
+//                    Log.e("AsyncImage", "Image loading error: ${error.throwable}")
+//                }
+//            )
+            .build(),
+        contentDescription = "image for Weather",
+        contentScale = ContentScale.FillBounds,
+        placeholder = painterResource(R.drawable.dummy),
+        error = painterResource(R.drawable.error),
+        modifier = Modifier.size(size.dp).clip(CircleShape)
+    )
 }
