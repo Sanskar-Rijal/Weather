@@ -29,13 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun WeatherAppbar(title:String="London",
                   icon:ImageVector?=null,
                   isMainScreen:Boolean=true,
                   elevation:Dp=0.dp,
-                  //navController: NavController,
+                  navController: NavController,
                   onAddActionClicked:() -> Unit ={},
                   onButtonClicked:() -> Unit ={}){
 
@@ -52,11 +51,17 @@ fun WeatherAppbar(title:String="London",
          actions = {
              //actions are always at end of the Screen
              if(isMainScreen){
-                 IconButton(onClick = { }) {
+                 IconButton(onClick = {
+                     onAddActionClicked.invoke()
+                 }) {
                      Icon(imageVector = Icons.Default.Search ,
                          contentDescription = "Search Icon",
-                         tint = MaterialTheme.colorScheme.inversePrimary) }
-                 IconButton(onClick = {}) {
+                         tint = MaterialTheme.colorScheme.inversePrimary)
+                 }
+
+                 IconButton(onClick = {
+
+                 }) {
                      Icon(imageVector = Icons.Rounded.MoreVert,
                          contentDescription = "more item",
                          tint = MaterialTheme.colorScheme.inversePrimary)

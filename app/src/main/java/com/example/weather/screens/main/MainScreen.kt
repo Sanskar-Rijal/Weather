@@ -44,6 +44,7 @@ import com.example.weather.data.DataorException
 import com.example.weather.model.City
 import com.example.weather.model.Weather
 import com.example.weather.model.WeatherItem
+import com.example.weather.navigation.WeatherScreens
 import com.example.weather.utils.day
 import com.example.weather.utils.formatDate
 import com.example.weather.utils.formatDecimal
@@ -72,7 +73,11 @@ fun MainScaffold(weather: Weather,navController: NavController){
 
     Scaffold(
         topBar = {
-            WeatherAppbar(title = weather.city.name + " , ${weather.city.country}"){
+            WeatherAppbar(title = weather.city.name + " , ${weather.city.country}",
+                navController = navController,
+                onAddActionClicked = {
+                    navController.navigate(WeatherScreens.SearchScreen.name)
+                }){
                 //onbuttonclicked is last parameter so we can use trailing lamda
             }
         }
@@ -211,9 +216,6 @@ fun SunRiseandSunset(weather: City)
 //for showing list of weather for this week
 @Composable
 fun WeatherRow(weather: List<WeatherItem>){
-    val options = remember(weather){
-        weather.toMutableList() //when the weather list changes, this will recompose
-    }
     Surface(modifier = Modifier
         .padding(10.dp)
         .fillMaxHeight()
@@ -228,8 +230,6 @@ fun WeatherRow(weather: List<WeatherItem>){
             }
         }
     }
-
-
 //items of row inside Weatherrow
 @Composable
 fun weatherDetailedRow(data: WeatherItem){
