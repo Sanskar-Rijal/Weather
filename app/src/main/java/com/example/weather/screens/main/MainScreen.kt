@@ -67,7 +67,7 @@ fun MainScreen(navController: NavController,viewModel: MainViewModel= hiltViewMo
     }
 }
 
-//testing
+//top bar for main screen
 @Composable
 fun MainScaffold(weather: Weather,navController: NavController){
 
