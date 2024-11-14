@@ -39,6 +39,7 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -123,21 +124,26 @@ fun ShowSettingDropDownMenu(ShowDialouge: MutableState<Boolean>, navController: 
 
     Column(modifier = Modifier.fillMaxWidth()
         .wrapContentSize(Alignment.TopEnd)
-        .absolutePadding(top = 50.dp, right = 25.dp)) {
+        .absolutePadding(top = 60.dp, right = 25.dp)) {
         //invoking dropdown menu
         DropdownMenu(expanded = expand,
+
             onDismissRequest ={
                 expand=false
                 ShowDialouge.value = false
                               },
-            modifier = Modifier.width(150.dp)
+            modifier = Modifier
+                .width(150.dp)
                 .background(MaterialTheme.colorScheme.primary)) {
             items.forEachIndexed { index, text ->
-                DropdownMenuItem(text= { Text(text, modifier = Modifier.clickable {  }, fontWeight = FontWeight.ExtraBold) },
+                DropdownMenuItem(text= { Text(text, modifier = Modifier.clickable {  },
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.ExtraBold)},
                     onClick = {
                     expand=false
                     ShowDialouge.value=false //when we click on eitherone i.e about , favorites etc then i want dialouge to disappear
                 },
+                    modifier = Modifier.padding(5.dp),
                     leadingIcon = {
                         when (text){
                         "About" -> Icon(Icons.Outlined.Info, contentDescription = "about icon")
