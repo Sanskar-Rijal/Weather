@@ -52,11 +52,13 @@ import com.example.weather.utils.formatTimeandDate
 import com.example.weather.widgets.WeatherAppbar
 
 @Composable
-fun MainScreen(navController: NavController,viewModel: MainViewModel= hiltViewModel()){
+fun MainScreen(navController: NavController,
+               viewModel: MainViewModel= hiltViewModel(),
+               city:String?){
 
     val weatherData = produceState<DataorException<Weather,Boolean,Exception>>(
         initialValue =DataorException(loading = true)){
-        value = viewModel.getWeatherData("Kathmandu")
+        value = viewModel.getWeatherData(city = city.toString())
     }.value
 
     if(weatherData.loading==true){

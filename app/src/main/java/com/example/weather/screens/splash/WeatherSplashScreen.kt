@@ -36,6 +36,9 @@ fun WeatherSplashScreen(navController:NavController){
         androidx.compose.animation.core.Animatable(0f)
     }
 
+    //creating default city
+    val defaultcity="Kathmandu"
+
     LaunchedEffect(key1 = true) {
         scale.animateTo(
             targetValue = 0.9f,
@@ -46,7 +49,7 @@ fun WeatherSplashScreen(navController:NavController){
                         .getInterpolation(it) })
         )
         delay(1000L)
-        navController.navigate(WeatherScreens.MainScreen.name)
+        navController.navigate(WeatherScreens.MainScreen.name+"/$defaultcity")
     }
 
     Surface(

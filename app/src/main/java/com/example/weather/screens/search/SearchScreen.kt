@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.weather.navigation.WeatherScreens
 import com.example.weather.widgets.WeatherAppbar
 
 //Top bar for Search Screen
@@ -48,7 +49,7 @@ fun SearchScreen (navController: NavController){
                     .padding(16.dp)
                     .align(Alignment.CenterHorizontally)){country-> //we are getting country from the user
 
-                  //  Log.d("TAG", "SearchScreen: $country")
+                    navController.navigate(WeatherScreens.MainScreen.name+"/$country")
                 }
             }
         }
@@ -77,9 +78,9 @@ fun SearchBar(
             valueState= searchQueryState,
             placeholder="City Name",
             onAction=KeyboardActions{
-                if(!valid)
+                if(!valid) {//if the text field is empty then it will return
                     return@KeyboardActions
-
+                }
                     onSearch(searchQueryState.value.trim()) //we are passing the country on OnSearch that we wrote using keyboard
                 searchQueryState.value = "" //removing the previously entered text form text field
                 keyboardController?.hide()
@@ -99,7 +100,7 @@ fun CommonTextField(valueState: MutableState<String>,
                     onAction:KeyboardActions=KeyboardActions.Default){
     OutlinedTextField(
         value = valueState.value,
-        onValueChange = {valueState.value=it},
+        onValueChange = {valueState.value=it},//when user enters name of city then valueState will be updated
         label = { Text(text = placeholder) },// the text written in label is displayed inside the container
         maxLines = 1,
         singleLine = true,

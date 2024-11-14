@@ -3,9 +3,11 @@ package com.example.weather.navigation
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.weather.screens.main.MainScreen
 import com.example.weather.screens.main.MainViewModel
 import com.example.weather.screens.search.SearchScreen
@@ -25,9 +27,22 @@ fun WeatherNavigation() {
            WeatherSplashScreen(navController)
        }
 
-       composable(WeatherScreens.MainScreen.name){
-           val mainViewModel:MainViewModel= hiltViewModel()
-           MainScreen(navController,mainViewModel)
+
+       //www.google.com/cityname="london" we are passing the city variable like the url in web
+       val route=WeatherScreens.MainScreen.name
+       composable("$route/{city}",//it simply means
+           // composable(WeatherScreens.MainScreen.name+"/{city}"))
+           arguments = listOf(navArgument(name = "city"){
+               type= NavType.StringType //we are passing string type i.e name of city
+           })) { BackStackEntry->
+
+           BackStackEntry.arguments?.getString("city").let { cityname->
+
+               val mainViewModel:MainViewModel= hiltViewModel()
+               MainScreen(navController,mainViewModel,city= cityname)
+
+           } //all the names must be same i.e city
+
        }
 
        composable(WeatherScreens.SearchScreen.name){
