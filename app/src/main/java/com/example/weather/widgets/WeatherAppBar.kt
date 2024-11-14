@@ -1,28 +1,45 @@
 package com.example.weather.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.traceEventEnd
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +54,15 @@ fun WeatherAppbar(title:String="London",
                   navController: NavController,
                   onAddActionClicked:() -> Unit ={},
                   onButtonClicked:() -> Unit ={}){
+
+    //creating state for 3 dots to show favorite, setting and etc
+    val showDialog = remember{
+        mutableStateOf(false) //when we click on the icon then we want it to be true
+    }
+
+    if(showDialog.value){
+        ShowSettingDropDownMenu(ShowDialouge=showDialog,navController=navController)
+    }
 
 
      CenterAlignedTopAppBar( colors = TopAppBarDefaults.topAppBarColors(
@@ -60,10 +86,10 @@ fun WeatherAppbar(title:String="London",
                  }
 
                  IconButton(onClick = {
-
+                     showDialog.value= true
                  }) {
                      Icon(imageVector = Icons.Rounded.MoreVert,
-                         contentDescription = "more item",
+                         contentDescription = "more item",// 3dot icon
                          tint = MaterialTheme.colorScheme.inversePrimary)
                  }
 
@@ -83,3 +109,57 @@ fun WeatherAppbar(title:String="London",
          }
      )
 }
+
+//for show dialouge
+
+@Composable
+fun ShowSettingDropDownMenu(ShowDialouge: MutableState<Boolean>, navController: NavController) {
+
+    var expand by remember {
+        mutableStateOf(true)
+    }
+
+    val items = listOf("About","Favorites","Settings")
+
+    Column(modifier = Modifier.fillMaxWidth()
+        .wrapContentSize(Alignment.TopEnd)
+        .absolutePadding(top = 50.dp, right = 25.dp)) {
+        //invoking dropdown menu
+        DropdownMenu(expanded = expand,
+            onDismissRequest ={
+                expand=false
+                ShowDialouge.value = false
+                              },
+            modifier = Modifier.width(150.dp)
+                .background(MaterialTheme.colorScheme.primary)) {
+            items.forEachIndexed { index, text ->
+                DropdownMenuItem(text= { Text(text, modifier = Modifier.clickable {  }, fontWeight = FontWeight.ExtraBold) },
+                    onClick = {
+                    expand=false
+                    ShowDialouge.value=false //when we click on eitherone i.e about , favorites etc then i want dialouge to disappear
+                },
+                    leadingIcon = {
+                        when (text){
+                        "About" -> Icon(Icons.Outlined.Info, contentDescription = "about icon")
+                        "Favorites"->Icon(Icons.Outlined.Favorite, contentDescription = "favorite icon")
+                        else -> Icon(Icons.Outlined.Settings, contentDescription = "settings icon")
+                    }},
+                    colors = MenuItemColors(textColor =MaterialTheme.colorScheme.inversePrimary,
+                        leadingIconColor=MaterialTheme.colorScheme.inversePrimary,
+                        trailingIconColor=MaterialTheme.colorScheme.inversePrimary,
+                        disabledTextColor = MaterialTheme.colorScheme.inversePrimary,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.inversePrimary,
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.inversePrimary
+
+                        )
+                    )
+            }
+        }
+    }
+    // Reset `expand` when ShowSettingDropDownMenu is shown
+    if (ShowDialouge.value && !expand) { //when showdialouge is true then expand must be true otherwise button won't be clicked
+        expand = true // Reset expand only when the dialog opens and expand is false
+    }
+}
+
+
