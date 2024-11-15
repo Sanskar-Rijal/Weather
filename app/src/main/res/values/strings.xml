@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Weather</string>
+    <string name="about_app">Weather App version 1.7.1</string>
+    <string name="weather_info">Uses API by OpenWeather,to contact me use the email rizalsanskar@gmail.com</string>
 </resources>

@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.weather.navigation.WeatherScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +102,7 @@ fun WeatherAppbar(title:String="London",
              if(icon!=null){
                  Icon(imageVector = icon,
                      contentDescription = "arrow back",
-                     //tint = MaterialTheme.colorScheme.onSecondary,
+                     tint = MaterialTheme.colorScheme.inversePrimary,
                      modifier = Modifier.padding(10.dp)
                          .clickable {
                          onButtonClicked.invoke()
@@ -136,7 +137,16 @@ fun ShowSettingDropDownMenu(ShowDialouge: MutableState<Boolean>, navController: 
                 .width(150.dp)
                 .background(MaterialTheme.colorScheme.primary)) {
             items.forEachIndexed { index, text ->
-                DropdownMenuItem(text= { Text(text, modifier = Modifier.clickable {  },
+                DropdownMenuItem(text= { Text(text, modifier = Modifier.clickable {
+                    navController.navigate(
+                        //we have to check which one has been  tapped
+                        when (text){
+                            "About" ->WeatherScreens.AboutScreen.name
+                            "Favorites"->WeatherScreens.FavoriteScreen.name
+                            else -> WeatherScreens.SettingsScreen.name
+                        }
+                    )
+                },
                     fontSize = 15.sp,
                     fontWeight = FontWeight.ExtraBold)},
                     onClick = {
