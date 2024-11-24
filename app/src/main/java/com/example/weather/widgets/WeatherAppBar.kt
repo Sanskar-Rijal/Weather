@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,8 +45,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.weather.model.Favorites
 import com.example.weather.navigation.WeatherScreens
+import com.example.weather.screens.FavScreen.FavViewmodel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +57,7 @@ fun WeatherAppbar(title:String="London",
                   icon:ImageVector?=null,
                   isMainScreen:Boolean=true,
                   elevation:Dp=0.dp,
+                  FavViewModel:FavViewmodel= hiltViewModel(),
                   navController: NavController,
                   onAddActionClicked:() -> Unit ={},
                   onButtonClicked:() -> Unit ={}){
@@ -107,6 +112,27 @@ fun WeatherAppbar(title:String="London",
                          .clickable {
                          onButtonClicked.invoke()
                      })
+                 //if its main screen i want to show the icon to mark favorites
+                 if (isMainScreen){
+                     Icon(Icons.Default.Favorite,
+                         contentDescription = "Favorite icon",
+                         modifier = Modifier.scale(0.9f).clickable {
+                             FavViewModel.insertfav(Favorites(
+                                 city = title.split(",")[0], //city name
+                                 country = title.split(",")[1] //country code
+                             ))//Biratnagar, Np ,it will take first item from the comma i.e Biratnagar
+                             /**
+                              * or we can do this
+                              * val dataList = title.split(",")
+                              * city=dataList[0]
+                              * country=dataList[1]
+                              */
+                         },
+                         tint = Color.Red.copy(alpha = 0.6f)
+                     )
+
+                 }
+
              }
          }
      )

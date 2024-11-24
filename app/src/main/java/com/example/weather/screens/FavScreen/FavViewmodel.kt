@@ -34,7 +34,7 @@ class FavViewmodel @Inject constructor(private val repository: WeatherDtabseRepo
         }
     }
 
-    fun insertnote(fav:Favorites)=viewModelScope.launch {
+    fun insertfav(fav:Favorites)=viewModelScope.launch {
         repository.insertFav(fav)
     }
 
