@@ -85,7 +85,7 @@ fun WeatherAppbar(title:String="London",
              //actions are always at end of the Screen
              if(isMainScreen){
                  IconButton(onClick = {
-                     onAddActionClicked.invoke()
+                     onAddActionClicked.invoke() //it will take to search screen
                  }) {
                      Icon(imageVector = Icons.Default.Search ,
                          contentDescription = "Search Icon",
@@ -104,19 +104,22 @@ fun WeatherAppbar(title:String="London",
              else Box{}
          },
          navigationIcon = {
-             if(icon!=null){
+             if(icon!=null) {
                  Icon(imageVector = icon,
                      contentDescription = "arrow back",
                      tint = MaterialTheme.colorScheme.inversePrimary,
                      modifier = Modifier.padding(10.dp)
                          .clickable {
-                         onButtonClicked.invoke()
-                     })
+                             onButtonClicked.invoke()
+                         })
+             }
                  //if its main screen i want to show the icon to mark favorites
                  if (isMainScreen){
                      Icon(Icons.Default.Favorite,
                          contentDescription = "Favorite icon",
-                         modifier = Modifier.scale(0.9f).clickable {
+                         modifier = Modifier.scale(0.9f)
+                             .padding(start = 9.dp)
+                             .clickable {
                              FavViewModel.insertfav(Favorites(
                                  city = title.split(",")[0], //city name
                                  country = title.split(",")[1] //country code
@@ -132,8 +135,6 @@ fun WeatherAppbar(title:String="London",
                      )
 
                  }
-
-             }
          }
      )
 }

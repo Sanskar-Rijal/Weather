@@ -48,7 +48,6 @@ fun SearchScreen (navController: NavController){
                     .fillMaxWidth()
                     .padding(16.dp)
                     .align(Alignment.CenterHorizontally)){country-> //we are getting country from the user
-
                     navController.navigate(WeatherScreens.MainScreen.name+"/$country")
                 }
             }

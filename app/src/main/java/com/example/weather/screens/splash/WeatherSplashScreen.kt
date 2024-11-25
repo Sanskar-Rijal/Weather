@@ -29,6 +29,7 @@ import com.example.weather.R
 import com.example.weather.navigation.WeatherScreens
 import kotlinx.coroutines.delay
 
+
 @Composable
 fun WeatherSplashScreen(navController:NavController){
     //animating  the splash screeen
@@ -36,8 +37,8 @@ fun WeatherSplashScreen(navController:NavController){
         androidx.compose.animation.core.Animatable(0f)
     }
 
+    var defaultcity = "Kathmandu"
     //creating default city
-    val defaultcity="Kathmandu"
 
     LaunchedEffect(key1 = true) {
         scale.animateTo(
