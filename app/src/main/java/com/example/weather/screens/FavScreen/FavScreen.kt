@@ -51,6 +51,8 @@ fun FavoriteScreen(
             .fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally) {
+                //getting the data from fav viewmodel
+
                 val list = favViewmodel.favlist.collectAsState().value
                 LazyColumn {
                     items(items =list){

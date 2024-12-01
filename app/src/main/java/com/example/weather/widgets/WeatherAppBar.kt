@@ -1,5 +1,7 @@
 package com.example.weather.widgets
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
@@ -28,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +43,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,6 +75,14 @@ fun WeatherAppbar(title:String="London",
     if(showDialog.value){
         ShowSettingDropDownMenu(ShowDialouge=showDialog,navController=navController)
     }
+
+    //creating mutable state for toast
+     val showToast = remember {
+         mutableStateOf(false)
+     }
+
+    //to get a context for toast
+    val context = LocalContext.current
 
 
      CenterAlignedTopAppBar( colors = TopAppBarDefaults.topAppBarColors(
@@ -108,35 +121,63 @@ fun WeatherAppbar(title:String="London",
                  Icon(imageVector = icon,
                      contentDescription = "arrow back",
                      tint = MaterialTheme.colorScheme.inversePrimary,
-                     modifier = Modifier.padding(10.dp)
+                     modifier = Modifier
+                         .padding(10.dp)
                          .clickable {
                              onButtonClicked.invoke()
                          })
              }
                  //if its main screen i want to show the icon to mark favorites check
                  if (isMainScreen){
-                     Icon(Icons.Default.Favorite,
-                         contentDescription = "Favorite icon",
-                         modifier = Modifier.scale(0.9f)
-                             .padding(start = 9.dp)
-                             .clickable {
-                             FavViewModel.insertfav(Favorites(
-                                 city = title.split(",")[0], //city name
-                                 country = title.split(",")[1] //country code
-                             ))//Biratnagar, Np ,it will take first item from the comma i.e Biratnagar
-                             /**
-                              * or we can do this
-                              * val dataList = title.split(",")
-                              * city=dataList[0]
-                              * country=dataList[1]
-                              */
-                         },
-                         tint = Color.Red.copy(alpha = 0.6f)
-                     )
 
+                     //creating a variable to check data base , whether current city exists or not
+                     val isAlreadyExist = FavViewModel.favlist.collectAsState().value.filter {item ->
+                         (item.city==title.split(",")[0])
+                         //isAlreadyExist is an array i.e list
+                     }
+
+                     if(isAlreadyExist.isNullOrEmpty() ) {
+                         Icon(
+                             Icons.Default.Favorite,
+                             contentDescription = "Favorite icon",
+                             modifier = Modifier
+                                 .scale(0.9f)
+                                 .padding(start = 9.dp)
+                                 .clickable {
+                                     FavViewModel.insertfav(
+                                         Favorites(
+                                             city = title.split(",")[0], //city name
+                                             country = title.split(",")[1] //country code
+                                         )).run {
+                                             showToast.value=true
+                                     }
+                                     //Biratnagar, Np ,it will take first item from the comma i.e Biratnagar
+                                     /**
+                                      * or we can do this
+                                      * val dataList = title.split(",")
+                                      * city=dataList[0]
+                                      * country=dataList[1]
+                                      */
+                                 },
+                             tint = Color.Red.copy(alpha = 0.6f)
+                         )
+                     }
+                     else {
+                         //if we are on fav screen we don't want to see fav icon
+                         showToast.value=false
+                         Box {  }
+                     }
+                     ShowToast(context = context,showIt= showToast )
                  }
          }
      )
+}
+
+@Composable
+fun ShowToast(context:Context , showIt: MutableState<Boolean>) {
+    if(showIt.value){
+        Toast.makeText(context, "City Added To Favorites", Toast.LENGTH_SHORT).show()
+    }
 }
 
 //for show dialouge
@@ -150,7 +191,8 @@ fun ShowSettingDropDownMenu(ShowDialouge: MutableState<Boolean>, navController: 
 
     val items = listOf("About","Favorites","Settings")
 
-    Column(modifier = Modifier.fillMaxWidth()
+    Column(modifier = Modifier
+        .fillMaxWidth()
         .wrapContentSize(Alignment.TopEnd)
         .absolutePadding(top = 60.dp, right = 25.dp)) {
         //invoking dropdown menu
