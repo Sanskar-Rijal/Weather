@@ -113,7 +113,7 @@ fun WeatherAppbar(title:String="London",
                              onButtonClicked.invoke()
                          })
              }
-                 //if its main screen i want to show the icon to mark favorites
+                 //if its main screen i want to show the icon to mark favorites check
                  if (isMainScreen){
                      Icon(Icons.Default.Favorite,
                          contentDescription = "Favorite icon",
