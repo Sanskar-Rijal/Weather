@@ -8,7 +8,6 @@ import javax.annotation.Nonnull
 //sql database
 @Entity(tableName = "Settings_tbl")
 data class Unit(
-
     @Nonnull
     @PrimaryKey
     @ColumnInfo(name ="unit")

@@ -3,7 +3,6 @@ package com.example.weather.repository
 import com.example.weather.data.WeatherDao
 import com.example.weather.model.Favorites
 import com.example.weather.model.Unit
-import com.example.weather.ui.theme.WeatherTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -21,7 +20,7 @@ WeatherDtabseRepo @Inject constructor(private val WeatherDao:WeatherDao) { //wee
 
     //now to show all the currently stored favoriete items
     //use kotlin coroutines FLOW
-    fun getAllFav():kotlinx.coroutines.flow.Flow<List<Favorites>> = WeatherDao.getFavorites().flowOn(Dispatchers.IO).conflate()
+    fun getAllFav():Flow<List<Favorites>> = WeatherDao.getFavorites().flowOn(Dispatchers.IO).conflate()
 
 
     //for UNIT DATABASE
