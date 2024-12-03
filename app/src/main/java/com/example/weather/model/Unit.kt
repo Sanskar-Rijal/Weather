@@ -12,5 +12,4 @@ data class Unit(
     @PrimaryKey
     @ColumnInfo(name ="unit")
     val unit:String
-
 )

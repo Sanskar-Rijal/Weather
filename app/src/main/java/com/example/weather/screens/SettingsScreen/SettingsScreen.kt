@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,8 +28,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.weather.model.Unit
 import com.example.weather.widgets.WeatherAppbar
 
 @Composable
@@ -79,6 +84,22 @@ fun SettingsScreen(navController: NavController,
                        .background(MaterialTheme.colorScheme.inversePrimary)
                ) {
                    Text(text = if(unitToggleState)"Fahrenheit F" else "Celcius C", color = Color.White )
+               }
+
+               Button( modifier = Modifier.padding(5.dp)
+                   .align(Alignment.CenterHorizontally),
+                   shape = RoundedCornerShape(30.dp),
+                   colors =ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary) ,
+                   onClick = {
+                        settingsViewmodel.deleteallunit() //deleting the previous setting added
+                       //example if it was celcius then when user press button it will be fahrenheit
+                       settingsViewmodel.insertUnit( Unit(unit = choiceState ))
+
+                   } ) {
+                   Text(text = "SAVE",
+                       modifier = Modifier.padding(5.dp),
+                       color = Color.White,
+                       fontSize = 17.sp)
                }
 
            }
