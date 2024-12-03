@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,8 +47,13 @@ fun SettingsScreen(navController: NavController,
 
     val measurementUnits = listOf("Imperial (F)","Metric (C)") //it will toggle between F , C so i have to add another state
 
+    val choicefromdb = settingsViewmodel.unitList.collectAsState().value //getting all the data from database
+    val defaultChoice = if(choicefromdb.isNullOrEmpty()) measurementUnits[0]
+    else
+        choicefromdb[0].unit
+
     var choiceState by remember {
-        mutableStateOf("")
+        mutableStateOf(defaultChoice)
     }
 
    Scaffold(topBar = {
