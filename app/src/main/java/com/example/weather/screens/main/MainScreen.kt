@@ -21,7 +21,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +49,7 @@ import com.example.weather.model.City
 import com.example.weather.model.Weather
 import com.example.weather.model.WeatherItem
 import com.example.weather.navigation.WeatherScreens
+import com.example.weather.screens.SettingsScreen.SettingsViewModel
 import com.example.weather.utils.day
 import com.example.weather.utils.formatDate
 import com.example.weather.utils.formatDecimal
@@ -53,24 +59,68 @@ import com.example.weather.widgets.WeatherAppbar
 @Composable
 fun MainScreen(navController: NavController,
                viewModel: MainViewModel= hiltViewModel(),
+               settingsViewmodel:SettingsViewModel= hiltViewModel(),
                city:String?){
 
-    val weatherData = produceState<DataorException<Weather,Boolean,Exception>>(
-        initialValue =DataorException(loading = true)){
-        value = viewModel.getWeatherData(city = city.toString())
-    }.value
+    val unitfromdb =settingsViewmodel.unitList.collectAsState().value
+    var unit by remember {
+        mutableStateOf("imperial")
+    }
+    var isImperial by remember {
+        mutableStateOf(false)
+    }
 
-    if(weatherData.loading==true){
-        CircularProgressIndicator()
+    var CheckTemperature:Boolean?=null
+
+    if(!unitfromdb.isNullOrEmpty()){
+
+        unit =unitfromdb[0].unit.split(" ")[0].lowercase()//it is saved as IMPERIAL "F"
+        //split " " split it's from space and [0] picks the first letter i.e imperial
+        isImperial= unit =="imperial"  //will return true or false
+        val weatherData = produceState<DataorException<Weather,Boolean,Exception>>(
+            initialValue =DataorException(loading = true)){
+            value = viewModel.getWeatherData(city = city.toString())
+        }.value
+
+        if(weatherData.loading==true){
+            CircularProgressIndicator()
+        }
+        else if (weatherData.data !=null ){
+
+            var currentweather: Double =
+                (formatDecimal(weatherData.data!!.list[0].main.temp)).toDouble()
+
+           // var nextweather:Double = (formatDecimal(weatherData.data!!.list[0].main.temp))
+            if(isImperial) {
+                //means F
+                weatherData.data!!.list.forEachIndexed { index, it ->
+
+                    currentweather =it.main.temp -273.15
+
+                    farnheitConverter(currentweather) { data ->
+                        currentweather = (formatDecimal((data * 1.8) + 32)).toDouble()
+                    }
+                   weatherData.data!!.list[index].main.temp=currentweather
+                    CheckTemperature = false
+                }
+            }
+            else{
+                //means degree C
+                weatherData.data!!.list.forEachIndexed { index, it ->
+                    currentweather =it.main.temp - 273.15
+                    weatherData.data!!.list[index].main.temp=currentweather
+                CheckTemperature=true
+                    }
+            }
+            MainScaffold(weather=weatherData.data!!,navController,CheckTemperature!!)
+        }
     }
-    else if (weatherData.data !=null ){
-        MainScaffold(weather=weatherData.data!!,navController)
     }
-}
+
 
 //top bar for main screen
 @Composable
-fun MainScaffold(weather: Weather,navController: NavController){
+fun MainScaffold(weather: Weather,navController: NavController,CheckTemp:Boolean){
 
     Scaffold(
         topBar = {
@@ -83,14 +133,14 @@ fun MainScaffold(weather: Weather,navController: NavController){
             }
         }
     ) {
-        MainContent(Modifier.padding(it),weather)
+        MainContent(Modifier.padding(it),weather,CheckTemp)
     }
 
 }
 
 
 @Composable
-fun MainContent(modifier: Modifier,data:Weather){
+fun MainContent(modifier: Modifier,data:Weather,CheckTemp: Boolean){
 
     //for image
     val imageUrl = "https://openweathermap.org/img/wn/${data.list[0].weather[0].icon}.png"
@@ -116,7 +166,7 @@ fun MainContent(modifier: Modifier,data:Weather){
                  //adding image
                  WeatherStateImage(imageUrl = imageUrl)
 
-                 Text(text = formatDecimal(data.list[0].main.temp-273.15) + "°",
+                 Text(text = formatDecimal(data.list[0].main.temp) + "°",
                      style = MaterialTheme.typography.displayLarge,
                      fontWeight = FontWeight.ExtraBold)
 
@@ -134,7 +184,7 @@ fun MainContent(modifier: Modifier,data:Weather){
              fontSize = 17.sp)
 
          //scrollable weather for this week
-         WeatherRow(weather = data.list)
+         WeatherRow(weather = data.list,CheckTemp)
      }
 }
 
@@ -216,7 +266,7 @@ fun SunRiseandSunset(weather: City)
 
 //for showing list of weather for this week
 @Composable
-fun WeatherRow(weather: List<WeatherItem>){
+fun WeatherRow(weather: List<WeatherItem>,CheckTemp: Boolean){
     Surface(modifier = Modifier
         .padding(10.dp)
         .fillMaxHeight()
@@ -226,14 +276,14 @@ fun WeatherRow(weather: List<WeatherItem>){
     ) {
         LazyColumn {
             items(items = weather){ item: WeatherItem ->
-                    weatherDetailedRow(item)
+                    weatherDetailedRow(item,CheckTemp)
                 }
             }
         }
     }
 //items of row inside Weatherrow
 @Composable
-fun weatherDetailedRow(data: WeatherItem){
+fun weatherDetailedRow(data: WeatherItem,CheckTemp: Boolean){
     Card(modifier = Modifier
         .padding(5.dp)
         .clip(RoundedCornerShape(topEnd = 33.dp, bottomStart = 33.dp))
@@ -258,7 +308,9 @@ fun weatherDetailedRow(data: WeatherItem){
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold)
 
-            Text(text = formatDecimal(data.main.temp -273.15) +"°",
+            //if true then we are in C, else we are in F
+            Text(text = if(CheckTemp)formatDecimal(data.main.temp)+"°" else //this is C
+                formatDecimal(data.main.temp)+"°",//this is F
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold)
         }
@@ -284,4 +336,9 @@ fun WeatherStateImage(imageUrl:String,size:Int=80){
         error = painterResource(R.drawable.error),
         modifier = Modifier.size(size.dp).clip(CircleShape)
     )
+}
+
+
+fun farnheitConverter(data:Double,returndata: (Double) ->Unit={} ){
+    returndata(data)
 }
