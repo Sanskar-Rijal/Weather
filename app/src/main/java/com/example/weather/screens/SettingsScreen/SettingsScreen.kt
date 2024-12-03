@@ -1,5 +1,7 @@
 package com.example.weather.screens.SettingsScreen
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +42,10 @@ import com.example.weather.widgets.WeatherAppbar
 fun SettingsScreen(navController: NavController,
                    settingsViewmodel:SettingsViewModel= hiltViewModel()
 ){
+
+
+    //making toast msg
+    val context = LocalContext.current
 
     //creating state for button
     var unitToggleState by remember {
@@ -84,7 +91,8 @@ fun SettingsScreen(navController: NavController,
                             choiceState="Metric (C)"
                         }
                    },
-                   modifier = Modifier.fillMaxWidth(0.5f)
+                   modifier = Modifier
+                       .fillMaxWidth(0.5f)
                        .clip(shape = RectangleShape)
                        .padding(5.dp)
                        .background(MaterialTheme.colorScheme.inversePrimary)
@@ -92,7 +100,8 @@ fun SettingsScreen(navController: NavController,
                    Text(text = if(unitToggleState)"Fahrenheit F" else "Celcius C", color = Color.White )
                }
 
-               Button( modifier = Modifier.padding(5.dp)
+               Button( modifier = Modifier
+                   .padding(5.dp)
                    .align(Alignment.CenterHorizontally),
                    shape = RoundedCornerShape(30.dp),
                    colors =ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary) ,
@@ -101,6 +110,7 @@ fun SettingsScreen(navController: NavController,
                        //example if it was celcius then when user press button it will be fahrenheit
                        settingsViewmodel.insertUnit( Unit(unit = choiceState ))
 
+                       Toast.makeText(context, "Unit Changed Successfully", Toast.LENGTH_SHORT).show()
                    } ) {
                    Text(text = "SAVE",
                        modifier = Modifier.padding(5.dp),
